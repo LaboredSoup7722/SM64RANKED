@@ -87,14 +87,30 @@ public class SM64RCT extends JFrame {
         gbc.gridx = 0;
         
         gbc.gridy = 0;
-        JLabel titleLabel = new JLabel("SM64 Ranked", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 36));
-        titleLabel.setForeground(Color.WHITE);
+        gbc.gridy = 0;
+        
+        // Use HTML to color each letter with official Mario hex color codes
+        String marioTitle = "<html>"
+            + "<font color='#E52521'>S</font>" // Mario Red
+            + "<font color='#049CD8'>M</font>" // Sky Blue
+            + "<font color='#FBD000'>6</font>" // Coin Yellow
+            + "<font color='#43B047'>4</font>" // Pipe Green
+            + " "
+            + "<font color='#E52521'>R</font>"
+            + "<font color='#049CD8'>a</font>"
+            + "<font color='#FBD000'>n</font>"
+            + "<font color='#43B047'>k</font>"
+            + "<font color='#E52521'>e</font>"
+            + "<font color='#049CD8'>d</font>"
+            + "</html>";
+            
+        JLabel titleLabel = new JLabel(marioTitle, SwingConstants.CENTER);
+        titleLabel.setFont(loadMarioFont(36f));
         startPanel.add(titleLabel, gbc);
         
         gbc.gridy = 1;
         JLabel subLabel = new JLabel("Select your instance:", SwingConstants.CENTER);
-        subLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        subLabel.setFont(loadMarioFont(16f));
         subLabel.setForeground(Color.LIGHT_GRAY);
         startPanel.add(subLabel, gbc);
         
@@ -116,7 +132,7 @@ public class SM64RCT extends JFrame {
     
     private void styleButton(JButton btn) {
         btn.setPreferredSize(new Dimension(200, 50));
-        btn.setFont(new Font("SansSerif", Font.BOLD, 16));
+        btn.setFont(loadMarioFont(16f));
         btn.setBackground(new Color(220, 220, 220)); 
         btn.setForeground(Color.BLACK); 
         btn.setFocusPainted(false);
@@ -168,38 +184,44 @@ public class SM64RCT extends JFrame {
         JPanel trackerContainer = new JPanel(new BorderLayout());
         trackerContainer.setBackground(new Color(20, 20, 20));
 
-        JPanel localPanel = new JPanel(new GridLayout(4, 1));
+JPanel localPanel = new JPanel(new GridLayout(4, 1));
         localPanel.setBackground(new Color(20, 20, 20));
         localPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(10, 10, 5, 10), 
-            BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(70, 70, 70), 1, true), "Your Tracker", 0, 0, new Font("SansSerif", Font.BOLD, 12), Color.LIGHT_GRAY)
+            // Updated border font:
+            BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(70, 70, 70), 1, true), "Your Tracker", 0, 0, loadMarioFont(12f), Color.LIGHT_GRAY)
         ));
 
         statusLabel = new JLabel("Status: Connecting to Server...", SwingConstants.CENTER);
+        statusLabel.setFont(loadMarioFont(14f)); // Added font
         statusLabel.setForeground(Color.LIGHT_GRAY);
         timerLabel = new JLabel("00:00.00", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Monospaced", Font.BOLD, 42));
+        timerLabel.setFont(loadMarioFont(48f));
         timerLabel.setForeground(new Color(100, 255, 100));
         targetLabel = new JLabel("Target: N/A", SwingConstants.CENTER);
+        targetLabel.setFont(loadMarioFont(14f)); // Added font
         targetLabel.setForeground(Color.WHITE);
         starsLabel = new JLabel("Stars: 0", SwingConstants.CENTER);
+        starsLabel.setFont(loadMarioFont(18f)); // Added font
         starsLabel.setForeground(new Color(255, 215, 0));
 
         localPanel.add(statusLabel); localPanel.add(timerLabel);
         localPanel.add(targetLabel); localPanel.add(starsLabel);
 
-        JPanel oppPanel = new JPanel(new GridLayout(2, 1));
+JPanel oppPanel = new JPanel(new GridLayout(2, 1));
         oppPanel.setBackground(new Color(20, 20, 20)); 
         oppPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0, 10, 5, 10),
-            BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(150, 50, 50), 1, true), "Opponent", 0, 0, new Font("SansSerif", Font.BOLD, 12), new Color(255, 100, 100))
+            // Updated border font:
+            BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(150, 50, 50), 1, true), "Opponent", 0, 0, loadMarioFont(12f), new Color(255, 100, 100))
         ));
 
         oppStatusLabel = new JLabel("Status: Waiting...", SwingConstants.CENTER);
+        oppStatusLabel.setFont(loadMarioFont(14f)); // Added font
         oppStatusLabel.setForeground(Color.LIGHT_GRAY);
         oppLastSplitLabel = new JLabel("Last Split: None", SwingConstants.CENTER);
         oppLastSplitLabel.setForeground(Color.WHITE);
-        oppLastSplitLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        oppLastSplitLabel.setFont(loadMarioFont(14f)); // Updated font
 
         oppPanel.add(oppStatusLabel); oppPanel.add(oppLastSplitLabel);
 
@@ -217,7 +239,7 @@ public class SM64RCT extends JFrame {
         JList<String> splitsList = new JList<>(splitsModel);
         splitsList.setBackground(new Color(25, 25, 25)); 
         splitsList.setForeground(Color.WHITE);
-        splitsList.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        splitsList.setFont(loadMarioFont(14f));
         splitsList.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
 
         JScrollPane scrollPane = new JScrollPane(splitsList);
@@ -229,7 +251,7 @@ public class SM64RCT extends JFrame {
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(new Color(20, 20, 20));
         resultLabel = new JLabel("", SwingConstants.CENTER);
-        resultLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
+        resultLabel.setFont(loadMarioFont(42f));
         resultPanel.add(resultLabel, BorderLayout.CENTER);
         centerCards.add(resultPanel, "RESULT");
 
@@ -495,6 +517,25 @@ private void startTrackingThread() {
         String colorHex = deltaMs > 0 ? "#FF6464" : "#64FF64"; 
         
         return "<html><font color='white'>[" + timeStr + "] " + segName + " </font><font color='" + colorHex + "'>(" + diffStr + ")</font></html>";
+    }
+
+    // Loads the custom font from the relative assets folder
+    private Font loadMarioFont(float size) {
+        try {
+            String currentPath = System.getProperty("user.dir");
+            File fontFile = new File(currentPath, "assets/mario.ttf");
+            
+            if (fontFile.exists()) {
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(customFont);
+                // Note: The 'f' is required so Java knows you are passing a float for the size
+                return customFont.deriveFont(size); 
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load custom font, falling back to default.");
+        }
+        // Fallback just in case the font file is missing
+        return new Font("SansSerif", Font.BOLD, (int)size);
     }
 
     private static String formatTime(long totalMs) {
