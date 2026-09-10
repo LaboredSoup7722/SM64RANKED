@@ -87,7 +87,6 @@ public class SM64RCT extends JFrame {
         gbc.gridx = 0;
         
         gbc.gridy = 0;
-        gbc.gridy = 0;
         
         // Use HTML to color each letter with official Mario hex color codes
         String marioTitle = "<html>"
@@ -109,22 +108,10 @@ public class SM64RCT extends JFrame {
         startPanel.add(titleLabel, gbc);
         
         gbc.gridy = 1;
-        JLabel subLabel = new JLabel("Select your instance:", SwingConstants.CENTER);
-        subLabel.setFont(loadMarioFont(16f));
-        subLabel.setForeground(Color.LIGHT_GRAY);
-        startPanel.add(subLabel, gbc);
-        
-        gbc.gridy = 2;
-        JButton p1Button = new JButton("Player 1 (Host)");
-        styleButton(p1Button);
-        p1Button.addActionListener(e -> startGame("Player 1"));
-        startPanel.add(p1Button, gbc);
-        
-        gbc.gridy = 3;
-        JButton p2Button = new JButton("Player 2 (Join)");
-        styleButton(p2Button);
-        p2Button.addActionListener(e -> startGame("Player 2"));
-        startPanel.add(p2Button, gbc);
+        JButton findMatchButton = new JButton("Find Ranked Match");
+        styleButton(findMatchButton);
+        findMatchButton.addActionListener(e -> startGame());
+        startPanel.add(findMatchButton, gbc);
 
         rootPanel.add(startPanel, "START");
         add(rootPanel);
@@ -142,49 +129,39 @@ public class SM64RCT extends JFrame {
         ));
     }
 
-  private void startGame(String playerType) {
-        if (playerType.equals("Player 2")) {
-            String inputIP = JOptionPane.showInputDialog(this, "Enter Host's Address (e.g., localhost or playit.gg:12345):", "localhost");
-            if (inputIP == null) return; 
-            serverIP = inputIP.trim().isEmpty() ? "localhost" : inputIP.trim();
-        }
-
-        setTitle("SM64 Ranked - " + playerType);
+    private void startGame() {
+        // Hardcode your AWS EC2 IP here later. Using localhost for your local Go test!
+        serverIP = "localhost"; 
         
-        // --- NEW DYNAMIC DIRECTORY LOGIC ---
+        setTitle("SM64 Ranked - Searching...");
+        
+        // --- NEW UNIFIED DIRECTORY LOGIC ---
         String currentPath = System.getProperty("user.dir");
         File dataDir = new File(currentPath, "data");
         
-        // Automatically create the data folder if it doesn't exist
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
         
-        // Dynamically assign absolute paths based on where the Java file is running
-        if (playerType.equals("Player 1")) {
-            playerFilePath = new File(dataDir, "player1.json").getAbsolutePath();
-            cmdFilePath = new File(dataDir, "cmd1.txt").getAbsolutePath();
-            setLocation(200, 200);
-        } else {
-            playerFilePath = new File(dataDir, "player2.json").getAbsolutePath();
-            cmdFilePath = new File(dataDir, "cmd2.txt").getAbsolutePath();
-            setLocation(700, 200);
-        }
+        // Everyone uses the exact same standard files now
+        playerFilePath = new File(dataDir, "player.json").getAbsolutePath();
+        cmdFilePath = new File(dataDir, "cmd.txt").getAbsolutePath();
         
-        // Automatically format the string for Lua and print it to the console
+        // Center the tracker on the screen
+        setLocationRelativeTo(null);
+        
         System.out.println("=============================================");
-        System.out.println("LUA PATHS AUTO-GENERATED FOR " + playerType.toUpperCase() + ":");
+        System.out.println("LUA PATHS AUTO-GENERATED:");
         System.out.println("local jsonFilePath = \"" + playerFilePath.replace("\\", "\\\\") + "\"");
         System.out.println("local cmdFilePath  = \"" + cmdFilePath.replace("\\", "\\\\") + "\"");
         System.out.println("=============================================");
-        // -----------------------------------
         
         writeCommand("GO");
 
         JPanel trackerContainer = new JPanel(new BorderLayout());
         trackerContainer.setBackground(new Color(20, 20, 20));
 
-JPanel localPanel = new JPanel(new GridLayout(4, 1));
+        JPanel localPanel = new JPanel(new GridLayout(4, 1));
         localPanel.setBackground(new Color(20, 20, 20));
         localPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(10, 10, 5, 10), 
@@ -208,7 +185,7 @@ JPanel localPanel = new JPanel(new GridLayout(4, 1));
         localPanel.add(statusLabel); localPanel.add(timerLabel);
         localPanel.add(targetLabel); localPanel.add(starsLabel);
 
-JPanel oppPanel = new JPanel(new GridLayout(2, 1));
+        JPanel oppPanel = new JPanel(new GridLayout(2, 1));
         oppPanel.setBackground(new Color(20, 20, 20)); 
         oppPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0, 10, 5, 10),
@@ -356,7 +333,7 @@ JPanel oppPanel = new JPanel(new GridLayout(2, 1));
         }).start();
     }
 
-private void startTrackingThread() {
+    private void startTrackingThread() {
         Thread trackerThread = new Thread(() -> {
             Path filePath = Paths.get(playerFilePath);
             int lastKnownStars = -1, lastKnownLevel = -1;
@@ -367,7 +344,7 @@ private void startTrackingThread() {
             long lastPingTime = System.currentTimeMillis();
 
             while (true) {
-                // NEW: Fire a PING every 15 seconds to keep the playit.gg tunnel alive
+                // NEW: Fire a PING every 15 seconds to keep the tunnel alive
                 if (networkOut != null && (System.currentTimeMillis() - lastPingTime > 15000)) {
                     networkOut.println("PING");
                     lastPingTime = System.currentTimeMillis();
