@@ -88,7 +88,6 @@ public class SM64RCT extends JFrame {
         
         gbc.gridy = 0;
         
-        // Use HTML to color each letter with official Mario hex color codes
         String marioTitle = "<html>"
             + "<font color='#E52521'>S</font>" // Mario Red
             + "<font color='#049CD8'>M</font>" // Sky Blue
@@ -165,7 +164,6 @@ public class SM64RCT extends JFrame {
         localPanel.setBackground(new Color(20, 20, 20));
         localPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(10, 10, 5, 10), 
-            // Updated border font:
             BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(70, 70, 70), 1, true), "Your Tracker", 0, 0, loadMarioFont(12f), Color.LIGHT_GRAY)
         ));
 
@@ -189,16 +187,15 @@ public class SM64RCT extends JFrame {
         oppPanel.setBackground(new Color(20, 20, 20)); 
         oppPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0, 10, 5, 10),
-            // Updated border font:
             BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(150, 50, 50), 1, true), "Opponent", 0, 0, loadMarioFont(12f), new Color(255, 100, 100))
         ));
 
         oppStatusLabel = new JLabel("Status: Waiting...", SwingConstants.CENTER);
-        oppStatusLabel.setFont(loadMarioFont(14f)); // Added font
+        oppStatusLabel.setFont(loadMarioFont(14f));
         oppStatusLabel.setForeground(Color.LIGHT_GRAY);
         oppLastSplitLabel = new JLabel("Last Split: None", SwingConstants.CENTER);
         oppLastSplitLabel.setForeground(Color.WHITE);
-        oppLastSplitLabel.setFont(loadMarioFont(14f)); // Updated font
+        oppLastSplitLabel.setFont(loadMarioFont(14f));
 
         oppPanel.add(oppStatusLabel); oppPanel.add(oppLastSplitLabel);
 
@@ -340,11 +337,10 @@ public class SM64RCT extends JFrame {
             Pattern starsPattern = Pattern.compile("\"stars\":\\s*(\\d+)");
             Pattern levelPattern = Pattern.compile("\"level\":\\s*(\\d+)");
             
-            // NEW: Initialize the Heartbeat Timer
             long lastPingTime = System.currentTimeMillis();
 
             while (true) {
-                // NEW: Fire a PING every 15 seconds to keep the tunnel alive
+
                 if (networkOut != null && (System.currentTimeMillis() - lastPingTime > 15000)) {
                     networkOut.println("PING");
                     lastPingTime = System.currentTimeMillis();
@@ -496,7 +492,6 @@ public class SM64RCT extends JFrame {
         return "<html><font color='white'>[" + timeStr + "] " + segName + " </font><font color='" + colorHex + "'>(" + diffStr + ")</font></html>";
     }
 
-    // Loads the custom font from the relative assets folder
     private Font loadMarioFont(float size) {
         try {
             String currentPath = System.getProperty("user.dir");
@@ -511,7 +506,6 @@ public class SM64RCT extends JFrame {
         } catch (Exception e) {
             System.out.println("Could not load custom font, falling back to default.");
         }
-        // Fallback just in case the font file is missing
         return new Font("SansSerif", Font.BOLD, (int)size);
     }
 
