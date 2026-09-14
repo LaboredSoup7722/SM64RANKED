@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SM64RCT extends JFrame {
+public class SM64RCT extends JFrame
+{
 
     private JPanel rootPanel;
     private CardLayout rootCardLayout;
@@ -38,16 +39,19 @@ public class SM64RCT extends JFrame {
 
     interface SegmentCondition { boolean isMet(int currentLevel, int lastLevel, int currentStars); }
     
-    static class Segment {
+    static class Segment
+    {
         String name; 
         SegmentCondition condition;
-        Segment(String name, SegmentCondition condition) { 
+        Segment(String name, SegmentCondition condition)
+        { 
             this.name = name; 
             this.condition = condition; 
         }
     }
 
-    private static final Segment[] ROUTE_SEGMENTS = {
+    private static final Segment[] ROUTE_SEGMENTS = 
+    {
         new Segment("Bob-omb Battlefield (1 Star)", (curr, last, stars) -> last == 9 && curr != 9 && stars >= 1),
         new Segment("Whomp's Fortress (6 Stars)",   (curr, last, stars) -> last == 24 && curr != 24 && stars >= 6),
         new Segment("Cool, Cool Mountain (8 Stars)",(curr, last, stars) -> last == 5 && curr != 5 && stars >= 8),
@@ -67,7 +71,8 @@ public class SM64RCT extends JFrame {
     private long[] oppTimes = new long[ROUTE_SEGMENTS.length];
     private int[] listIndexForSegment = new int[ROUTE_SEGMENTS.length];
 
-    public SM64RCT() {
+    public SM64RCT()
+    {
         Arrays.fill(localTimes, -1);
         Arrays.fill(oppTimes, -1);
         Arrays.fill(listIndexForSegment, -1);
@@ -116,7 +121,8 @@ public class SM64RCT extends JFrame {
         add(rootPanel);
     }
     
-    private void styleButton(JButton btn) {
+    private void styleButton(JButton btn)
+    {
         btn.setPreferredSize(new Dimension(200, 50));
         btn.setFont(loadMarioFont(16f));
         btn.setBackground(new Color(220, 220, 220)); 
@@ -128,7 +134,8 @@ public class SM64RCT extends JFrame {
         ));
     }
 
-    private void startGame() {
+    private void startGame()
+    {
         // Hardcode your AWS EC2 IP here later. Using localhost for your local Go test!
         serverIP = "localhost"; 
         
@@ -238,43 +245,55 @@ public class SM64RCT extends JFrame {
         startTrackingThread();
     }
     
-    private void writeCommand(String cmd) {
-        try (PrintWriter writer = new PrintWriter(cmdFilePath)) {
+    private void writeCommand(String cmd)
+    {
+        try (PrintWriter writer = new PrintWriter(cmdFilePath))
+        {
             writer.print(cmd);
         } catch (FileNotFoundException e) {}
     }
 
-    private void connectToServer() {
-        new Thread(() -> {
+    private void connectToServer()
+    {
+        new Thread(() ->
+        {
             String targetIP = serverIP;
             int targetPort = 8080;
             
-            if (serverIP.contains(":")) {
+            if (serverIP.contains(":"))
+            {
                 String[] parts = serverIP.split(":");
                 targetIP = parts[0];
                 try { targetPort = Integer.parseInt(parts[1]); } catch (NumberFormatException e) { targetPort = 8080; }
             }
 
-            try (Socket socket = new Socket(targetIP, targetPort)) {
+            try (Socket socket = new Socket(targetIP, targetPort))
+            {
                 networkOut = new PrintWriter(socket.getOutputStream(), true);
                 networkIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 String serverMessage;
-                while ((serverMessage = networkIn.readLine()) != null) {
+                while ((serverMessage = networkIn.readLine()) != null)
+                    {
                     final String msg = serverMessage;
                     
                     System.out.println("[NETWORK IN]: " + msg);
                     
-                    SwingUtilities.invokeLater(() -> {
-                        if (msg.startsWith("SYS:")) {
+                    SwingUtilities.invokeLater(() ->
+                    {
+                        if (msg.startsWith("SYS:"))
+                        {
                             statusLabel.setText(msg.substring(4));
-                            if (msg.contains("Opponent Found")) {
+                            if (msg.contains("Opponent Found"))
+                            {
                                 matchReady = true;
                                 statusLabel.setForeground(new Color(100, 255, 100));
                             }
-                        } else if (msg.startsWith("SPLIT#")) {
+                        } else if (msg.startsWith("SPLIT#"))
+                            {
                             String[] parts = msg.split("#", 5);
-                            if (parts.length == 5) {
+                            if (parts.length == 5)
+                            {
                                 try {
                                     long oppMs = Long.parseLong(parts[1]);
                                     String oppSplitTime = parts[2];
@@ -284,11 +303,13 @@ public class SM64RCT extends JFrame {
                                     oppTimes[segIdx] = oppMs;
                                     oppLastSplitLabel.setText("Just finished: " + segName + " (" + oppSplitTime + ")");
 
-                                    if (localTimes[segIdx] != -1 && listIndexForSegment[segIdx] != -1) {
+                                    if (localTimes[segIdx] != -1 && listIndexForSegment[segIdx] != -1)
+                                    {
                                         long delta = localTimes[segIdx] - oppMs;
                                         String formattedItem = buildSplitItemString(formatTime(localTimes[segIdx]), segName, delta);
                                         int itemIdx = listIndexForSegment[segIdx];
-                                        if (itemIdx < splitsModel.getSize()) {
+                                        if (itemIdx < splitsModel.getSize())
+                                        {
                                             splitsModel.set(itemIdx, formattedItem);
                                         }
                                     }
